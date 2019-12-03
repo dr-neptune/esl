@@ -1,0 +1,18 @@
+* Linear Methods for Regression
+
+** Linear Regression Models and Least Squares
+
+The linear regression model has the form $f(x) = \beta_0 + \sum_{j = 1}^{p} X_j \beta_j$
+
+The variables $X_j$ can come from different sources:
+
+- Quantitative Inputs
+- Transformations of quantitative inputs
+- Basis expansions, such as $X_2 = X_1^2$
+- Numeric, or dummy coding of the levels of qualitative inputs
+- Interactions between variables, e.g. $X_3 = X_1 * X_2$
+
+The most popular estimation method for our beta coefficients is *least squares*, in which we pick the coefficients $\beta = (\beta_0, \beta_1, ..., \beta_n)^T$ to minimize the residual sum of squares:
+
+$RSS(\beta) = \sum_{i=1}^{N}(y_i - f(x_i))^2 = \sum_{i=1}^{N}(y_i - \beta_0 - \sum_{j = 1}^p x_{ij}\beta_j)^2$
+
