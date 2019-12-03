@@ -1,0 +1,133 @@
+% Created 2019-12-03 Tue 18:43
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.1.9)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\section{Linear Methods for Regression}
+\label{sec:org88a8a5d}
+
+\subsection{Linear Regression Models and Least Squares}
+\label{sec:org688f0c0}
+
+The linear regression model has the form:
+
+\(f(x) = \beta_0 + \sum_{j = 1}^{p} X_j \beta_j + \epsilon\), where \(\epsilon \sim N(0, \sigma^2)\)
+
+The variables \(X_j\) can come from different sources:
+
+\begin{itemize}
+\item Quantitative Inputs
+\item Transformations of quantitative inputs
+\item Basis expansions, such as \(X_2 = X_1^2\)
+\item Numeric, or dummy coding of the levels of qualitative inputs
+\item Interactions between variables, e.g. \(X_3 = X_1 * X_2\)
+\end{itemize}
+
+The most popular estimation method for our beta coefficients is \textbf{least squares}, in which we pick the coefficients \(\beta = (\beta_0, \beta_1, ..., \beta_n)^T\) to minimize the residual sum of squares:
+
+\(RSS(\beta) = \sum_{i=1}^{N}(y_i - f(x_i))^2 
+= \sum_{i=1}^{N}(y_i - \beta_0 - \sum_{j = 1}^p x_{ij}\beta_j)^2\)
+
+The unique solution to minimizing above is: 
+
+\(\hat{\beta} = (X^TX)^{-1}X^Ty\). 
+
+In order to pin down the sampling properties of \(\hat{\beta}\), we make the following assumptions:
+
+\begin{itemize}
+\item the observations \(y_i\) are uncorrelated and have constant variance \(\sigma^2\)
+\item the \(x_i\) are fixed (non-random)
+\end{itemize}
+
+The variance-covariance matrix of least squares parameter estimates is given by:
+
+\(Var(\hat{\beta}) = (X^TX)^{-1}\sigma^2\). 
+
+Typically we estimate variance by \(\hat{\sigma^2} = \frac{1}{N - p - 1}\sum_{i = 1}^{N}(y_i - \hat{y_i})^2\), where the \(N - p - 1\) in the denominator makes \(\hat{\sigma^2}\) an unbiased estimate of \(\sigma^2\) (\(E[\hat{\sigma^2}] = \sigma^2\)). 
+
+To draw inferences about the parameters and the model, we assume: 
+
+\begin{itemize}
+\item That the conditional expectation of Y is linear in \(X_1, ..., X_p\)
+\item The deviations of Y around its expectation are additive and Gaussian
+\end{itemize}
+
+\(Y = E(Y | X_1, ..., X_p) + \epsilon\)
+
+Where 
+
+\begin{itemize}
+\item \(\epsilon \sim N(0, \sigma^2)\)
+\item \(\hat{\beta} \sim N(\beta, (X^TX)^{-1}\sigma^2)\)
+\item \((N-p-1)\hat{\sigma^2} \sim \sigma^2 \chi_{N - p - 1}^2\)
+\item \(\hat{\beta}\) and \(\hat{\sigma^2}\) are statistically independent
+\end{itemize}
+
+To test the hypothesis that a particular coefficient \(\beta_j = 0\), we form the standardized coefficient, or z-score:
+
+\(z_j = \frac{\hat{\beta_j}}{\hat{\sigma \sqrt{v_j}}}\)
+
+where \(v_j\) is the jth diagonal element of \((X^TX)^{-1}\). Under \(H_0: \beta_j = 0\), \(z_j \sim t_{N - p = 1}\) and hence a large absolute value of \(z_j\) will lead to rejection of the null hypothesis.
+
+We can isolate \(\beta_j\) to obtain a \(1 - 2 \alpha\) confidence interval for \(\beta_j\): 
+
+\((\hat{\beta_j} \pm z^{1 - \alpha}v_{j}^{\frac{1}{2}}\hat{\sigma^2})\)
+
+For example, \(z^{(1 - 0.025)} = 1.96\)
+
+To test for significance of groups of variables simulataneously (e.g., testing a categorical variable with k levels), we can use the F statistic: 
+
+\(F = \frac{(RSS_0 - RSS_1) / (p_1 - p_0)}{(RSS_1 / (N - p_1 - 1))}\) where \(RSS_1\) is the residual sum of squares for the least squares fit of the bigger model and \(RSS_0\) the same for the smaller model, having \(p_1 - p_0\) parameters constrained to be zero. 
+
+We can also obtain an approximate confidence set for the entire parameter vector \(\beta\): 
+
+\(C_{\beta} = \{\beta | (\hat{\beta} - \beta)^T X^TX(\hat{\beta} - \beta) \leq (\hat{\sigma^2}\chi_{p + 1}^2)^{1 - \alpha}\}\)
+
+where \(\chi_l^{2(1-\alpha)}\) is the \(1 - \alpha\) percentile of the chi squared distribution on l degrees of freedom. 
+
+This confidence set for \(\beta\) generates a corresponding confidence set for the true function \(f(x) = x^T\beta\)
+
+\subsection{The Gauss-Markov Theorem}
+\label{sec:orgcb07606}
+
+The Gauss-Markov theorem states that the least squares estimates of the parameters \(\beta\) have the smallest variance among all linear unbiased estimates.
+
+If we have any other linear estimator \(\tilde{\theta} = c^Ty\) that is unbiased for \(a^T\beta\) (\(E(c^Ty) = a^T\beta\)), then 
+
+\(Var(a^T\hat{\beta}) \leq Var(c^Ty)\)
+
+Consider the mean squared estimate \(\tilde{\theta}\) in estimating \(\theta\):
+
+\(MSE(\tilde{\theta}) = E(\tilde{\theta} -\theta)^2 = Var(\tilde{\theta}) + [E(\tilde{\theta}) - \theta]^2\)
+
+The first term is variance, the second is squared bias. 
+
+The Gauss-Markov theorem implies that the least squares estimator has the smallest mean squared error of all linear estimators with no bias. We can still get models with less MSE but some bias through regularization. These estimators trade bias for a reduction in variance. Picking the right model amounts to creating the right balance between bias and variance. 
+
+\subsection{Multiple Regression from Simple Univariate Regression}
+\label{sec:org0ea1aa8}
+\end{document}
