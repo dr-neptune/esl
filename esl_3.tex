@@ -1,4 +1,4 @@
-% Created 2019-12-03 Tue 18:43
+% Created 2019-12-03 Tue 23:20
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -28,10 +28,10 @@
 \tableofcontents
 
 \section{Linear Methods for Regression}
-\label{sec:org88a8a5d}
+\label{sec:orgdeedd98}
 
 \subsection{Linear Regression Models and Least Squares}
-\label{sec:org688f0c0}
+\label{sec:org2c30eed}
 
 The linear regression model has the form:
 
@@ -112,7 +112,7 @@ where \(\chi_l^{2(1-\alpha)}\) is the \(1 - \alpha\) percentile of the chi squar
 This confidence set for \(\beta\) generates a corresponding confidence set for the true function \(f(x) = x^T\beta\)
 
 \subsection{The Gauss-Markov Theorem}
-\label{sec:orgcb07606}
+\label{sec:org21a7d30}
 
 The Gauss-Markov theorem states that the least squares estimates of the parameters \(\beta\) have the smallest variance among all linear unbiased estimates.
 
@@ -129,5 +129,66 @@ The first term is variance, the second is squared bias.
 The Gauss-Markov theorem implies that the least squares estimator has the smallest mean squared error of all linear estimators with no bias. We can still get models with less MSE but some bias through regularization. These estimators trade bias for a reduction in variance. Picking the right model amounts to creating the right balance between bias and variance. 
 
 \subsection{Multiple Regression from Simple Univariate Regression}
-\label{sec:org0ea1aa8}
+\label{sec:org83ce5ff}
+
+Consider the univariate model with no intercept \(Y = X\beta + \epsilon\). The least squares estimates for this model would be \(\hat{\beta} = \frac{\sum_1^N x_i y_i}{\sum_1^N x_i^2}\), with residuals \(r_i = y_i - x_i \hat{\beta}\). 
+
+Let \(y = (y_1, ..., y_n)^T\), \(x = (x_1, ..., x_N)^T\), and define
+\(<x, y> = \sum_{i=1}^N x_i y_i = x^Ty\) (the inner product). Then we can write 
+
+\(\hat{\beta} = \frac{<x, y>}{<x, x>}\)
+\(r = y - x\hat{\beta}\)
+
+Suppose the inputs \(x_1, x_2, ..., x_p\) are orthogonal (\(<x_j, x_k> = 0\)) for all \(j \neq k\). Then the multivariate least squares estimates \(\hat{\beta_j}\) are equal to \(\frac{<x_j, y>}{<x_j, x_j>}\) -- the univariate estimates. When the inputs are orthogonal, they have no effect on each other's parameter estimates in the model. Orthogonal inputs occur most often with balanced, designed experiments where orthogonality is enforced. 
+
+Suppose we have an intercept with a single input x. Then the least squares coefficient of x has the form
+
+\(\hat{\beta_1} = \frac{<x - \bar{x}1, y>}{<x - \bar{x}1, x - \bar{x}1>}\)
+
+where \(\bar{x} = \sum_i \frac{x_i}{N}\) and \(1 = x_0\), the vector of N ones. We can view the estimate \(\hat{\beta_1}\) as the result of two applications of the simple regression. 
+
+The steps are:
+
+\begin{enumerate}
+\item Regress x on 1 to produce the residual \(z = x - \bar{x}1\)
+\item Regress y on the residual z to give the coefficient \(\hat{\beta_1}\)
+\end{enumerate}
+
+In this procedure, regress b on a means a simple univariate regression of b on a with no intercept, producing coefficient \(\hat{\gamma} = <a, b>/<a, a>\) and residual vector \(b - \hat{\gamma}a\). We say that b is adjusted for a, or is orthogonalized with respect to a. 
+
+Generalizing to p predictors we get 
+
+\(\hat{\beta_p} = \frac{<z_p, y>}{<z_p, z_p>}\)
+
+The multiple regression coefficient \(\hat{\beta_j}\) represents the additional contribution of \(x_j\) on y, after \(x_j\) has been adjusted for \(x_0, x_1, ..., x_{j-1}, x_{j+1}, ..., x_p\).
+
+If \(x_p\) is highly correlated with some of the other \(x_k\)'s, the residual vector \(z_p\) will be close to zero and the coefficient \(\hat{\beta_p}\) will be very unstable. 
+
+We also can get an alternative formula for the variance estimates:
+
+\(Var(\hat{\beta_p}) = \frac{\sigma^2}{<z_p, z_p>}, \frac{\sigma^2}{||z_p||^2}\)
+
+In other words, the precision with which we can estimate \(\hat{\beta_p}\) depends on the length of the residual vector \(z_p\); this represents how much of \(x_p\) is unexplained by the other \$x\(_{\text{k}}\)\$s.
+
+The algorithm described here is the \textbf{Gram Schmidt} procedure for multiple regression. It can be used to obtain the entire multiple least squares fit (as opposed to just \(\hat{\beta_p}\)).
+
+We can represent the second step of the algorithm in matrix form as the following:
+
+\(x = Z\Gamma\)
+
+where Z has as columns the \(z_j\) in order and \(\Gamma\) is the upper triangular matrix with entries \(\hat{\gamma_{kj}}\). 
+
+Introducing the diagonal matrix D with the jth diagonal entry \(D_{jj} = ||z_j||\), we get 
+
+\(X = ZD^{-1}D\Gamma = QR\)
+
+the QR decomposition of X. Here Q is an Nx(p + 1) orthogonal matrix, \(Q^TQ = I\), and \(R\) is a \((p+1)x(p+1)\) upper triangular matrix. 
+
+The QR decomposition represents a convenient orthogonal basis for the column space of X. With it, the least squares solution is given by
+
+\(\hat{\beta} = R^{-1}Q^Ty\)
+\(\hat{y} = QQ^Ty\)
+
+\subsection{Multiple Outputs}
+\label{sec:org11ff996}
 \end{document}
