@@ -1,4 +1,4 @@
-% Created 2019-12-03 Tue 23:20
+% Created 2019-12-04 Wed 23:20
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -28,10 +28,10 @@
 \tableofcontents
 
 \section{Linear Methods for Regression}
-\label{sec:orgdeedd98}
+\label{sec:org4d4318d}
 
 \subsection{Linear Regression Models and Least Squares}
-\label{sec:org2c30eed}
+\label{sec:org9a28ea4}
 
 The linear regression model has the form:
 
@@ -111,8 +111,8 @@ where \(\chi_l^{2(1-\alpha)}\) is the \(1 - \alpha\) percentile of the chi squar
 
 This confidence set for \(\beta\) generates a corresponding confidence set for the true function \(f(x) = x^T\beta\)
 
-\subsection{The Gauss-Markov Theorem}
-\label{sec:org21a7d30}
+\subsubsection{The Gauss-Markov Theorem}
+\label{sec:org7be48b4}
 
 The Gauss-Markov theorem states that the least squares estimates of the parameters \(\beta\) have the smallest variance among all linear unbiased estimates.
 
@@ -128,8 +128,8 @@ The first term is variance, the second is squared bias.
 
 The Gauss-Markov theorem implies that the least squares estimator has the smallest mean squared error of all linear estimators with no bias. We can still get models with less MSE but some bias through regularization. These estimators trade bias for a reduction in variance. Picking the right model amounts to creating the right balance between bias and variance. 
 
-\subsection{Multiple Regression from Simple Univariate Regression}
-\label{sec:org83ce5ff}
+\subsubsection{Multiple Regression from Simple Univariate Regression}
+\label{sec:orgf8343cf}
 
 Consider the univariate model with no intercept \(Y = X\beta + \epsilon\). The least squares estimates for this model would be \(\hat{\beta} = \frac{\sum_1^N x_i y_i}{\sum_1^N x_i^2}\), with residuals \(r_i = y_i - x_i \hat{\beta}\). 
 
@@ -189,6 +189,96 @@ The QR decomposition represents a convenient orthogonal basis for the column spa
 \(\hat{\beta} = R^{-1}Q^Ty\)
 \(\hat{y} = QQ^Ty\)
 
-\subsection{Multiple Outputs}
-\label{sec:org11ff996}
+\subsubsection{Multiple Outputs}
+\label{sec:org5250f43}
+
+Consider multiple outputs \(Y_1, ..., Y_k\) that we wish to predict with inputs \(X_0, ..., X_p\). 
+
+Assume a linear model for each input 
+
+\(Y_k = \beta_{0k} + \sum_{j=1}^p \beta_{jk} + \epsilon_k = f_k(X) + \epsilon\)
+
+With N training cases, we can write the model in matrix notation as 
+
+\(Y = XB + E\)
+
+with the multivariate loss function
+
+\(RSS(B) = \sum_{k=1}^K\sum_{i=1}^N(y_{ik} - f_k(x_i))^2 = \mathrm{tr}[(Y - XB)T(Y - XB)]\)
+
+If the errors \(\epsilon = (\epsilon_1, ..., \epsilon_k)\) are correlated, then we may wish to modify our loss function in favor of a multivariate version.
+
+Suppose \((Cov(\epsilon) = \Sigma\). Then we can use the multivariate weighted criterion 
+
+\(RSS(B; \Sigma) = \sum_{i=1}^N(y_i - f(x_i))^T\Sigma^{-1}(y_i - f(x_i)))\)
+
+where 
+
+\begin{itemize}
+\item \(f(x) = (f_1(x), ..., f_K(x))^T\)
+\item \(y_i\) is the vector of K responses for observation i
+\end{itemize}
+\subsection{Subset Selection}
+\label{sec:org0446dc7}
+
+Least Squares estimates are nice, but
+
+\begin{itemize}
+\item They often have low bias and high variance. Sometimes we can increase prediction accuracy by shrinking or setting some coefficients to 0. This sacrafices bias to reduce variance
+\item We decrease the number of predictors, finding a subset in which to explain the big picture
+\end{itemize}
+
+\subsubsection{Best Subset Selection}
+\label{sec:orgd463abb}
+
+Best subset regression finds for each \(k \in \{0, 1, ..., p\}\) the subset of size k that gives the smallest residual sum of squares.
+
+The leaps and bounds procedure makes this feasible for p as large as 30 or 40.
+
+\begin{enumerate}
+\item \href{https://colinpriestdotcom.files.wordpress.com/2015/07/leapsandbounds.pdf}{Regression By Leaps and Bounds}
+\label{sec:org9bbd804}
+\begin{itemize}
+\item This paper describes several algorithms for computing the
+residual sums of squares for all possible regressions with
+what appears to be a minimum of arithmetic (less than six
+floating-point operations per regression) and shows how two
+of these algorithms can be combined to form a simple leap and
+bound technique for finding the best subsets without
+examining all possible subsets. The result is a reduction of
+several orders of magnitude in the number of operations
+required to find the best subsets.
+\end{itemize}
+\end{enumerate}
+
+\subsubsection{Forward and Backward Stepwise Selection}
+\label{sec:org5db5659}
+
+Forward stepwise regression starts with the intercept and then sequentially adds into the model the predictor that most improves the fit. Clever updating algorithms can exploit the QR decomposition for the current fit to rapidly establish the next candidate. This method is greedy so it may not find a global optimum, but it is more computationally tractable and may find a solution with lower variance and more bias than the best subset. 
+
+Backward stepwise regression starts with the full model, then drops the variable with the smallest z-score.
+
+\subsubsection{Forward Stagewise Regression}
+\label{sec:org4cd1aca}
+
+Forward stagewise regression starts with forward stepwise regression, with an intercept equal to \(\bar{y}\) and centered predictors with coefficients initially all equal to 0. 
+
+At each step, the algorithm identifies the variable most correlated with the current residual. It then computes the simple linear regression coefficient of the residual on this chosen variable, and then adds it to the current coefficient for that variable. This is continued until none of the variables have correlation with the residuals. 
+
+Unlike forward stepwise regression, none of the other variables are adjusted when a term is added to the model. As a result, it takes longer to reach the least squares fit. This slowness pays dividends in high dimensional problems.
+\subsection{Shrinkage Methods}
+\label{sec:org622e7e3}
+
+Subset methods produce a model that is interpretable and possibly has lower error than the full model. However, since it is a discrete process (variables are retained or dropped) it often exhibits high variance and so doesn't often reduce the prediction error of the full model. 
+
+Shrinkage methods are more continuous and don't suffer as much from high variability.
+
+\subsubsection{Ridge Regression}
+\label{sec:org9201448}
+
+The ridge coefficients minimize a penalized residual sum of squares:
+
+\(\hat{\beta^{ridge}} = \arg \min_\beta \{\sum_{i=1}^N(y_i - \beta_0 - \sum_{j=1}^p x_{ij} \beta_j)^2 + \lambda \sum_{j=1}^p \beta_j^2\}\)
+
+where \(\lambda \geq 0\) is a complexity parameter that controls the amount of shrinkage. The idea of penalizing the sum of squares of the parameters is also used in neural networks, where it is called weight decay. 
 \end{document}

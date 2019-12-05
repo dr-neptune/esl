@@ -217,4 +217,9 @@ Shrinkage methods are more continuous and don't suffer as much from high variabi
 
 *** Ridge Regression
 
+The ridge coefficients minimize a penalized residual sum of squares:
+
+$\hat{\beta^{ridge}} = \arg \min_\beta \{\sum_{i=1}^N(y_i - \beta_0 - \sum_{j=1}^p x_{ij} \beta_j)^2 + \lambda \sum_{j=1}^p \beta_j^2\}$
+
+where $\lambda \geq 0$ is a complexity parameter that controls the amount of shrinkage. The idea of penalizing the sum of squares of the parameters is also used in neural networks, where it is called weight decay. 
 
